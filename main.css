@@ -1,0 +1,61 @@
+tr:nth-child(even):not(tfoot tr, thead tr) {
+    background-color: #eee;
+}
+
+th[scope='col'] {
+    background-color: #696969;
+    color: #fff;
+}
+
+th[scope='row'] {
+    background-color: #d7d9f2;
+}
+
+tfoot {
+    font-weight: bold;
+    background-color: #d7d9f2;
+}
+
+table {
+    border-collapse: collapse;
+    border: 2px solid rgb(200, 200, 200);
+    letter-spacing: 1px;
+    font-family: sans-serif;
+    font-size: 0.8rem;
+}
+
+td {
+    text-align: center;
+}
+
+td,
+th {
+    border: 1px solid rgb(155, 155, 155);
+    padding: 5px 10px;
+}
+
+.itemBox {
+    border: 1px solid rgb(155, 155, 155);
+    display: inline-block;
+    padding: 10px;
+    text-align: center;
+    border-radius: 20px;
+}
+
+#stuff {
+    display: -moz-grid;
+    display: -ms-grid;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+    gap: 10px;
+}
+
+#addNew {
+    display: inline;
+    border-radius: 100px;
+    width: 50px;
+    height: 50px;
+    text-align: center;
+    border: 2px solid black;
+    margin: auto 0;
+}
