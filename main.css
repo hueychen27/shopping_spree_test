@@ -1,3 +1,8 @@
+@font-face {
+    font-family: 'MerchantCopy';
+    src: url('MerchantCopy-GOXq.ttf');
+}
+
 * {
     margin: 0;
     padding: 0;
@@ -18,8 +23,12 @@ p {
     margin: 1rem 0;
 }
 
+tbody tr {
+    border-bottom: 1px solid rgb(155, 155, 155);
+}
+
 tr:nth-child(even):not(tfoot tr, thead tr) {
-    background-color: #eee;
+    background-color: #f9f9f9;
 }
 
 th[scope='col'] {
@@ -33,15 +42,16 @@ th[scope='row'] {
 
 tfoot {
     font-weight: bold;
-    background-color: #d7d9f2;
+    background-color: #f2f2f2;
 }
 
 table {
+    border: 1px solid rgb(155, 155, 155);
     border-collapse: collapse;
-    border: 2px solid rgb(200, 200, 200);
     letter-spacing: 1px;
-    font-family: sans-serif;
-    font-size: 0.8rem;
+    margin: 0 auto 20px auto;
+    font-family: 'MerchantCopy', sans-serif;
+    font-size: 1.3rem;
 }
 
 td {
@@ -50,8 +60,12 @@ td {
 
 td,
 th {
-    border: 1px solid rgb(155, 155, 155);
     padding: 5px 10px;
+}
+
+th {
+    background-color: #f2f2f2;
+    text-align: center;
 }
 
 ul {
@@ -137,6 +151,15 @@ input {
     height: 50px;
     text-align: center;
     border: 2px solid black;
+}
+
+#receipt {
+    height: 30vh;
+    overflow-y: auto;
+}
+
+#receiptHeader {
+    text-align: center;
 }
 
 @media only screen and (max-width: 605px) {

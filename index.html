@@ -23,13 +23,13 @@
                 <li>Name: <input class="nameThing" type="text" data-lastValid="item1" value="item1" oninput="if (items[`${this.value}`] == undefined && new RegExp(/^[\w\-\' ]+$/).test(this.value)) {items[`${this.value}`] = items[`${this.getAttribute('data-lastValid')}`],delete items[`${this.getAttribute('data-lastValid')}`],this.setAttribute('data-lastValid', this.value)} else {this.value = this.getAttribute('data-lastValid')}"></li>
                 <li>Price: $<input class="priceThing" type="text" data-lastValid="1.00" oninput="if (new RegExp(/^[0-9]+\.?([0-9]{1,2})?$/).test(this.value) || this.value == '') {this.setAttribute('data-lastValid', this.value), items[`${this.parentElement.previousElementSibling.querySelector('input').getAttribute('data-lastValid')}`].price = this.value} else { this.value = this.getAttribute('data-lastValid')} // https://stackoverflow.com/a/41981763/15055490" value="1.00"></li>
             </ul>
-            <label>Quantity: <input class="quantityThing" type="text" data-lastValid="1" oninput="if (new RegExp(/^[0-9]{1,10}$/).test(this.value)) {this.setAttribute('data-lastValid', this.value), items[`${this.parentElement.previousElementSibling.querySelector('input').getAttribute('data-lastValid')}`].quantity = this.value} else { this.value = this.getAttribute('data-lastValid')} // https://stackoverflow.com/a/41981763/15055490"></label>
+            <label>Quantity: <input class="quantityThing" type="text" data-lastValid="0" value="0" oninput="if (new RegExp(/^[0-9]{1,10}$/).test(this.value)) {this.setAttribute('data-lastValid', this.value), items[`${this.parentElement.previousElementSibling.querySelector('input').getAttribute('data-lastValid')}`].quantity = this.value} else { this.value = this.getAttribute('data-lastValid')} // https://stackoverflow.com/a/41981763/15055490"></label>
             <button class="remove" onclick="removeItemBox(this.parentElement);"><i class="fas fa-trash-xmark fa-xl"></i>Delete</button>
         </div>
         <button id="addNew" onclick="createItemBox();" title="Add another item!"><i class="fal fa-plus"></i></button>
     </section>
-    <section>
-        <h2>Receipt</h2>
+    <section id="receipt">
+        <h2 id="receiptHeader">Receipt</h2>
         <table id="table">
             <thead>
                 <tr>

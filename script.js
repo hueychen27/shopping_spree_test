@@ -29,8 +29,8 @@ document.addEventListener("keydown", (e) => {
 
 const items = {
     "item1": {
-        price: 1.00,
-        quantity: 1
+        price: "1.00",
+        quantity: 0
     }
 }
 
@@ -56,7 +56,7 @@ function createItemBox() {
             <li>Name: <input class="nameThing" type="text" data-lastValid="${name}" value="${name}" oninput="if (items[\`\${ this.value }\`] == undefined && new RegExp(/^[\\w\\-\\' ]+$/).test(this.value)) {items[\`\${this.value}\`] = items[\`\${ this.getAttribute('data-lastValid')}\`],delete items[\`\${ this.getAttribute('data-lastValid')}\`],this.setAttribute('data-lastValid', this.value)} else {this.value = this.getAttribute('data-lastValid')}"></li>
             <li>Price: $<input class="priceThing" type="text" data-lastValid="1.00" oninput="if (new RegExp(/^[0-9]+\\.?([0-9]{1,2})?$/).test(this.value) || this.value == '') {this.setAttribute('data-lastValid', this.value), items[\`\${ this.parentElement.previousElementSibling.querySelector('input').getAttribute('data-lastValid')}\`].price = this.value} else { this.value = this.getAttribute('data-lastValid')} // https://stackoverflow.com/a/41981763/15055490" value="1.00"></li>
         </ul>
-        <label>Quantity: <input class="quantityThing" type="text" data-lastValid="1" oninput="if (new RegExp(/^[0-9]{1,10}$/).test(this.value)) {this.setAttribute('data-lastValid', this.value), items[\`\${this.parentElement.previousElementSibling.querySelector('input').getAttribute('data-lastValid')}\`].quantity = this.value} else { this.value = this.getAttribute('data-lastValid')} // https://stackoverflow.com/a/41981763/15055490"></label>
+        <label>Quantity: <input class="quantityThing" type="text" data-lastValid="0" value="0" oninput="if (new RegExp(/^[0-9]{1,10}$/).test(this.value)) {this.setAttribute('data-lastValid', this.value), items[\`\${this.parentElement.previousElementSibling.querySelector('input').getAttribute('data-lastValid')}\`].quantity = this.value} else { this.value = this.getAttribute('data-lastValid')} // https://stackoverflow.com/a/41981763/15055490"></label>
         <button class="remove" onclick="removeItemBox(this.parentElement);"><i class="fas fa-trash-xmark fa-xl"></i>Delete</button>
     `;
     items[name] = {
@@ -76,12 +76,24 @@ function removeItemBox(element) {
     element.remove();
 }
 
-function numberWithCommas(x) {
-    return x < 1000000 ? x.toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ",") : numberformat.format(x);
+function numberWithCommas(x, integer = false) {
+    if (integer) return x < 1000000 ? parseInt(x).toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ",") : numberformat.format(parseInt(x))
+    return x < 1000000 ? parseInt(parseInt(x).toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ",")).toFixed(2) : numberformat.format(parseInt(x));
 }
 
 function updateTotal() {
     const table = document.getElementById("table");
+    table.querySelector('#tbody').innerHTML = "<tr style='display: none'></tr>";
+    for (let i = 0; i < Object.keys(items).length; i++) {
+        table.querySelector("#tbody").innerHTML += `
+            <tr>
+                <td>${Object.keys(items)[i]}</td>
+                <td>$${numberWithCommas(items[`${Object.keys(items)[i]}`].price)}</td>
+                <td>${numberWithCommas(Object.values(items)[i].quantity, true)}</td>
+                <td>$${numberWithCommas(items[`${Object.keys(items)[i]}`].price * Object.values(items)[i].quantity)}</td>
+            </tr>
+        `;
+    }
     table.querySelector("#subtotal").innerHTML = "$" + numberWithCommas((Object.values(items).reduce((a, b) => a + b.price * b.quantity, 0)).toFixed(2));
     window.requestAnimationFrame(updateTotal);
 }
