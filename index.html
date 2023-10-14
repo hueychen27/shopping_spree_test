@@ -4,8 +4,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="all.min.css" rel="stylesheet" type="text/css">
+    <link href="woff2.min.css" rel="stylesheet" type="text/css">
     <link href="main.css" rel="stylesheet" type="text/css">
     <title>Shopping Spree Test</title>
+    <script src="fontawesome.min.js" defer></script>
     <script src="script.js" defer></script>
 </head>
 
@@ -18,41 +21,48 @@
             <p>Description:</p>
             <ul>
                 <li>Name: <input class="nameThing" type="text" data-lastValid="item1" value="item1" oninput="if (items[`${this.value}`] == undefined && new RegExp(/^[\w\-\' ]+$/).test(this.value)) {items[`${this.value}`] = items[`${this.getAttribute('data-lastValid')}`],delete items[`${this.getAttribute('data-lastValid')}`],this.setAttribute('data-lastValid', this.value)} else {this.value = this.getAttribute('data-lastValid')}"></li>
-                <li>Price: $<input class="priceThing" type="text" data-lastValid="1.00" oninput="if (new RegExp(/^[0-9]+\.?([0-9]{1,2})?$/).test(this.value) || this.value == '') {this.setAttribute('data-lastValid', this.value), items[`${this.parentElement.previousElementSibling.querySelector('input').value}`] = this.value} else { this.value = this.getAttribute('data-lastValid')} // https://stackoverflow.com/a/41981763/15055490" value="1.00"></li>
+                <li>Price: $<input class="priceThing" type="text" data-lastValid="1.00" oninput="if (new RegExp(/^[0-9]+\.?([0-9]{1,2})?$/).test(this.value) || this.value == '') {this.setAttribute('data-lastValid', this.value), items[`${this.parentElement.previousElementSibling.querySelector('input').getAttribute('data-lastValid')}`].price = this.value} else { this.value = this.getAttribute('data-lastValid')} // https://stackoverflow.com/a/41981763/15055490" value="1.00"></li>
             </ul>
+            <label>Quantity: <input class="quantityThing" type="text" data-lastValid="1" oninput="if (new RegExp(/^[0-9]+$/).test(this.value)) {this.setAttribute('data-lastValid', this.value), items[`${this.parentElement.previousElementSibling.querySelector('input').getAttribute('data-lastValid')}`].quantity = this.value} else { this.value = this.getAttribute('data-lastValid')} // https://stackoverflow.com/a/41981763/15055490"></label>
+            <button class="remove" onclick="removeItemBox(this.parentElement);"><i class="fas fa-trash-xmark fa-xl"></i>Delete</button>
         </div>
-        <button id="addNew" onclick="createItemBox();" title="Add another item!">+</button>
+        <button id="addNew" onclick="createItemBox();" title="Add another item!"><i class="fal fa-plus"></i></button>
     </section>
-    <h2>Receipt</h2>
-    <table>
-        <thead>
-            <tr>
-                <th scope="col">Item</th>
-                <th scope="col">Unit Price</th>
-                <th scope="col"><abbr title="Quantity">Qty.</abbr></th>
-                <th scope="col">Calculated Price</th>
-            </tr>
-        </thead>
-        <tbody id="tbody">
-            <tr>
-
-            </tr>
-        </tbody>
-        <tfoot>
-            <tr>
-                <th>Subtotal</th>
-                <td id="subtotal" colspan="3">$0.00</td>
-            </tr>
-            <tr>
-                <th>Tax</th>
-                <td id="tax" colspan="3">$0.00</td>
-            </tr>
-            <tr>
-                <th>Total</th>
-                <td id="total" colspan="3">$0.00</td>
-            </tr>
-        </tfoot>
-    </table>
+    <section>
+        <h2>Receipt</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th scope="col">Item</th>
+                    <th scope="col">Unit Price</th>
+                    <th scope="col"><abbr title="Quantity">Qty.</abbr></th>
+                    <th scope="col">Calculated Price</th>
+                </tr>
+            </thead>
+            <tbody id="tbody">
+                <tr>
+                    <td>item1</td>
+                    <td>$1.00</td>
+                    <td>1</td>
+                    <td>$1.00</td>
+                </tr>
+            </tbody>
+            <tfoot>
+                <tr>
+                    <th>Subtotal</th>
+                    <td id="subtotal" colspan="3">$0.00</td>
+                </tr>
+                <tr>
+                    <th>Tax</th>
+                    <td id="tax" colspan="3">$0.00</td>
+                </tr>
+                <tr>
+                    <th>Total</th>
+                    <td id="total" colspan="3">$0.00</td>
+                </tr>
+            </tfoot>
+        </table>
+    </section>
 </body>
 
 </html>
