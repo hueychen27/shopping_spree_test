@@ -27,12 +27,29 @@ document.addEventListener("keydown", (e) => {
     }
 })
 
-const items = {
+const rename = (oldObj, oldKey, newKey) => {
+    const keys = Object.keys(oldObj);
+    const newObj = keys.reduce((acc, val) => {
+        if (val === oldKey) {
+            acc[newKey] = oldObj[oldKey];
+        }
+        else {
+            acc[val] = oldObj[val];
+        }
+        return acc;
+    }, {});
+
+    return newObj;
+} // Credits: https://stackoverflow.com/a/48110891/15055490
+
+let items = {
     "item1": {
         price: "1.00",
         quantity: 0
     }
 }
+
+let total = 0.00;
 
 function createItemBox() {
     let div = document.createElement("div");
@@ -53,8 +70,8 @@ function createItemBox() {
         <h1>${name2}</h1>
         <p>Description:</p>
         <ul>
-            <li>Name: <input class="nameThing" type="text" data-lastValid="${name}" value="${name}" oninput="if (items[\`\${ this.value }\`] == undefined && new RegExp(/^[\\w\\-\\' ]+$/).test(this.value)) {items[\`\${this.value}\`] = items[\`\${ this.getAttribute('data-lastValid')}\`],delete items[\`\${ this.getAttribute('data-lastValid')}\`],this.setAttribute('data-lastValid', this.value)} else {this.value = this.getAttribute('data-lastValid')}"></li>
-            <li>Price: $<input class="priceThing" type="text" data-lastValid="1.00" oninput="if (new RegExp(/^[0-9]+\\.?([0-9]{1,2})?$/).test(this.value) || this.value == '') {this.setAttribute('data-lastValid', this.value), items[\`\${ this.parentElement.previousElementSibling.querySelector('input').getAttribute('data-lastValid')}\`].price = this.value} else { this.value = this.getAttribute('data-lastValid')} // https://stackoverflow.com/a/41981763/15055490" value="1.00"></li>
+            <li>Name: <input class="nameThing" type="text" data-lastValid="${name}" value="${name}" oninput="if (items[\`\${ this.value }\`] == undefined && new RegExp(/^[\\w\\-\\' ]+$/).test(this.value)) {items = rename(items, this.getAttribute('data-lastValid'), this.value),this.setAttribute('data-lastValid', this.value)} else {this.value = this.getAttribute('data-lastValid')}"></li>
+            <li>Price: $<input class="priceThing" type="text" data-lastValid="1.00" oninput="if (new RegExp(/^[0-9]+\\.?([0-9]{1,2})?$/).test(this.value)) {this.setAttribute('data-lastValid', this.value), items[\`\${ this.parentElement.previousElementSibling.querySelector('input').getAttribute('data-lastValid')}\`].price = this.value} else { this.value = this.getAttribute('data-lastValid')} // https://stackoverflow.com/a/41981763/15055490" value="1.00"></li>
         </ul>
         <label>Quantity: <input class="quantityThing" type="text" data-lastValid="0" value="0" oninput="if (new RegExp(/^[0-9]{1,10}$/).test(this.value)) {this.setAttribute('data-lastValid', this.value), items[\`\${this.parentElement.previousElementSibling.querySelector('input').getAttribute('data-lastValid')}\`].quantity = this.value} else { this.value = this.getAttribute('data-lastValid')} // https://stackoverflow.com/a/41981763/15055490"></label>
         <button class="remove" onclick="removeItemBox(this.parentElement);"><i class="fas fa-trash-xmark fa-xl"></i>Delete</button>
@@ -78,7 +95,7 @@ function removeItemBox(element) {
 
 function numberWithCommas(x, integer = false) {
     if (integer) return x < 1000000 ? parseInt(x).toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ",") : numberformat.format(parseInt(x))
-    return x < 1000000 ? parseInt(parseInt(x).toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ",")).toFixed(2) : numberformat.format(parseInt(x));
+    return x < 1000000 ? parseFloat(x).toFixed(2).toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ",") : numberformat.format(parseFloat(x));
 }
 
 function updateTotal() {
@@ -94,7 +111,12 @@ function updateTotal() {
             </tr>
         `;
     }
-    table.querySelector("#subtotal").innerHTML = "$" + numberWithCommas((Object.values(items).reduce((a, b) => a + b.price * b.quantity, 0)).toFixed(2));
+    total = (Object.values(items).reduce((a, b) => a + b.price * b.quantity, 0)).toFixed(2);
+    table.querySelector("#subtotal").innerHTML = "$" + numberWithCommas(total);
+    const tax = (total * (document.getElementById("taxInput").value / 100)).toFixed(2);
+    table.querySelector("#tax").innerHTML = "$" + numberWithCommas(tax);
+    table.querySelector("#total").innerHTML = "$" + numberWithCommas(parseFloat(total + tax).toFixed(2));
+    total = table.querySelector("#total").innerHTML;
     window.requestAnimationFrame(updateTotal);
 }
 
