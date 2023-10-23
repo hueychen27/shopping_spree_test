@@ -1,5 +1,5 @@
 document.addEventListener("DOMContentLoaded", () => {
-    if (window.innerWidth < 299) {
+    if (((window.innerWidth > 0) ? window.innerWidth : screen.width) < 299) { // https://stackoverflow.com/a/6850319
         alert("Your screen is too small to display this website.")
     }
 })
@@ -27,28 +27,36 @@ document.addEventListener("keydown", (e) => {
     }
 })
 
-const rename = (oldObj, oldKey, newKey) => {
-    const keys = Object.keys(oldObj);
-    const newObj = keys.reduce((acc, val) => {
-        if (val === oldKey) {
-            acc[newKey] = oldObj[oldKey];
-        }
-        else {
-            acc[val] = oldObj[val];
-        }
-        return acc;
-    }, {});
-
-    return newObj;
-} // Credits: https://stackoverflow.com/a/48110891/15055490
-
-let items = {
-    "item1": {
-        price: "1.00",
-        quantity: 0
-    }
+const zeroIfEmpty = (val) => {
+    return val == "" ? 0 : val
 }
 
+/**
+ * Renames a key in a map by replacing it with a new key.
+ *
+ * @param {Map} map The map to modify.
+ * @param {string|number} oldKey The key to be replaced.
+ * @param {string|number} newKey The new key to replace the old key with.
+ */
+
+const rename = (map, oldKey, newKey) => {
+    const newMap = new Map();
+    for (const [key, value] of map) {
+        if (key === oldKey) {
+            newMap.set(newKey, value);
+        } else {
+            newMap.set(key, value);
+        }
+    }
+    return newMap;
+}
+
+let items = new Map();
+items.set("item1", {
+    price: "1.00",
+    quantity: 0
+}
+)
 let total = 0.00;
 
 function createItemBox() {
@@ -67,19 +75,19 @@ function createItemBox() {
     let name2 = "#" + i;
     div.className = "itemBox";
     div.innerHTML = `
-        <h1>${name2}</h1>
-        <p>Description:</p>
-        <ul>
-            <li>Name: <input class="nameThing" type="text" data-lastValid="${name}" value="${name}" oninput="if (items[\`\${ this.value }\`] == undefined && new RegExp(/^[\\w\\-\\' ]+$/).test(this.value)) {items = rename(items, this.getAttribute('data-lastValid'), this.value),this.setAttribute('data-lastValid', this.value)} else {this.value = this.getAttribute('data-lastValid')}"></li>
-            <li>Price: $<input class="priceThing" type="text" data-lastValid="1.00" oninput="if (new RegExp(/^[0-9]+\\.?([0-9]{1,2})?$/).test(this.value)) {this.setAttribute('data-lastValid', this.value), items[\`\${ this.parentElement.previousElementSibling.querySelector('input').getAttribute('data-lastValid')}\`].price = this.value} else { this.value = this.getAttribute('data-lastValid')} // https://stackoverflow.com/a/41981763/15055490" value="1.00"></li>
-        </ul>
-        <label>Quantity: <input class="quantityThing" type="text" data-lastValid="0" value="0" oninput="if (new RegExp(/^[0-9]{1,10}$/).test(this.value)) {this.setAttribute('data-lastValid', this.value), items[\`\${this.parentElement.previousElementSibling.querySelector('input').getAttribute('data-lastValid')}\`].quantity = this.value} else { this.value = this.getAttribute('data-lastValid')} // https://stackoverflow.com/a/41981763/15055490"></label>
-        <button class="remove" onclick="removeItemBox(this.parentElement);"><i class="fas fa-trash-xmark fa-xl"></i>Delete</button>
+<h1>${name2}</h1>
+<p>Description:</p>
+<ul>
+    <li>Name: <input class="nameThing" type="text" data-lastValid="${name}" value="${name}" oninput="if (items.get(this.value) == undefined && new RegExp(/^[\\w\\-\\' ]+$/).test(this.value)) {items = rename(items, this.getAttribute('data-lastValid'), this.value),this.setAttribute('data-lastValid', this.value)} else {this.value = this.getAttribute('data-lastValid')}"></li>
+    <li>Price: $<input class="priceThing" type="text" data-lastValid="1.00" oninput="if (new RegExp(/^[0-9]+\\.?([0-9]{1,2})?$/).test(this.value)) {this.setAttribute('data-lastValid', this.value), items.set(this.parentElement.previousElementSibling.querySelector('input').getAttribute('data-lastValid'), {price: this.value, quantity: items.get(this.parentElement.previousElementSibling.querySelector('input').getAttribute('data-lastValid')).quantity})} else { this.value = this.getAttribute('data-lastValid')} // https://stackoverflow.com/a/41981763/15055490" value="1.00"></li>
+</ul>
+<label>Quantity: <input class="quantityThing" type="text" data-lastValid="0" value="0" oninput="if (new RegExp(/^[0-9]{1,10}$/).test(this.value) || this.value == '') {this.setAttribute('data-lastValid', this.value), items.set(this.parentElement.previousElementSibling.querySelector('input').getAttribute('data-lastValid'), {price: items.get(this.parentElement.previousElementSibling.querySelector('input').getAttribute('data-lastValid')).price, quantity: this.value})} else { this.value = this.getAttribute('data-lastValid')} // https://stackoverflow.com/a/41981763/15055490"></label>
+<button class="remove" onclick="removeItemBox(this.parentElement);"><i class="fas fa-trash-xmark fa-xl"></i>Delete</button>
     `;
-    items[name] = {
+    items.set(name, {
         price: 1.00,
         quantity: 0
-    }
+    })
     const stuffSection = document.getElementById("stuff");
     stuffSection.insertBefore(div, document.getElementById("addNew"));
     stuffSection.scroll({
@@ -89,7 +97,7 @@ function createItemBox() {
 }
 
 function removeItemBox(element) {
-    delete items[`${element.querySelector(".nameThing").getAttribute("data-lastValid")}`];
+    items.delete(element.querySelector(".nameThing").getAttribute("data-lastValid"));
     element.remove();
 }
 
@@ -99,24 +107,27 @@ function numberWithCommas(x, integer = false) {
 }
 
 function updateTotal() {
-    const table = document.getElementById("table");
-    table.querySelector('#tbody').innerHTML = "<tr style='display: none'></tr>";
-    for (let i = 0; i < Object.keys(items).length; i++) {
-        table.querySelector("#tbody").innerHTML += `
+    document.getElementById('tbody').innerHTML = "<tr style='display: none'></tr>";
+    for (const [key, value] of items) {
+        document.getElementById("tbody").innerHTML += `
             <tr>
-                <td>${Object.keys(items)[i]}</td>
-                <td>$${numberWithCommas(items[`${Object.keys(items)[i]}`].price)}</td>
-                <td>${numberWithCommas(Object.values(items)[i].quantity, true)}</td>
-                <td>$${numberWithCommas(items[`${Object.keys(items)[i]}`].price * Object.values(items)[i].quantity)}</td>
+                <td>${key}</td>
+                <td>$${numberWithCommas(value.price)}</td>
+                <td>${numberWithCommas(zeroIfEmpty(value.quantity), true)}</td>
+                <td>$${numberWithCommas(value.price * value.quantity)}</td>
             </tr>
         `;
     }
-    total = (Object.values(items).reduce((a, b) => a + b.price * b.quantity, 0)).toFixed(2);
-    table.querySelector("#subtotal").innerHTML = "$" + numberWithCommas(total);
-    const tax = (total * (document.getElementById("taxInput").value / 100)).toFixed(2);
-    table.querySelector("#tax").innerHTML = "$" + numberWithCommas(tax);
-    table.querySelector("#total").innerHTML = "$" + numberWithCommas(parseFloat(total + tax).toFixed(2));
-    total = table.querySelector("#total").innerHTML;
+    total = 0.00;
+    items.forEach((item) => {
+        total += item.price * zeroIfEmpty(item.quantity)
+    })
+    total = total.toFixed(2);
+    document.getElementById("subtotal").innerHTML = "$" + numberWithCommas(total);
+    const tax = (total * (zeroIfEmpty(document.getElementById("taxInput").getAttribute("data-lastValid")) / 100)).toFixed(2);
+    document.getElementById("taxPercent").innerHTML = parseFloat(zeroIfEmpty(document.getElementById("taxInput").getAttribute("data-lastValid")));
+    document.getElementById("tax").innerHTML = "$" + numberWithCommas(tax);
+    document.getElementById("total").innerHTML = "$" + numberWithCommas((parseFloat(total) + parseFloat(tax)).toFixed(2));
     window.requestAnimationFrame(updateTotal);
 }
 
