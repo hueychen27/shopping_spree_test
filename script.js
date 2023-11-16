@@ -106,6 +106,10 @@ function numberWithCommas(x, integer = false) {
     return x < 1000000 ? parseFloat(x).toFixed(2).toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ",") : numberformat.format(parseFloat(x));
 }
 
+function formatNegativeMoney(m) {
+    return m.replace(/^\$-/, "-$");
+}
+
 function updateTotal() {
     document.getElementById('tbody').innerHTML = "<tr style='display: none'></tr>";
     for (const [key, value] of items) {
@@ -128,6 +132,8 @@ function updateTotal() {
     document.getElementById("taxPercent").innerHTML = parseFloat(zeroIfEmpty(document.getElementById("taxInput").getAttribute("data-lastValid")));
     document.getElementById("tax").innerHTML = "$" + numberWithCommas(tax);
     document.getElementById("total").innerHTML = "$" + numberWithCommas((parseFloat(total) + parseFloat(tax)).toFixed(2));
+    document.getElementById("balance").innerHTML = formatNegativeMoney("$" + numberWithCommas((parseFloat(document.getElementById("budget").value) - parseFloat(total)).toFixed(2)));
+    document.getElementById("balance").style.color = document.getElementById("balance").innerHTML.indexOf("-") == -1 ? "green" : "red";
     window.requestAnimationFrame(updateTotal);
 }
 

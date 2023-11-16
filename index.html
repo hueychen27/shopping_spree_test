@@ -15,6 +15,7 @@
 <body>
     <menu id="menu">
         <li>Tax: <input type="text" id="taxInput" data-lastValid="0" value="0" oninput="if (new RegExp(/^(?:\d{1,2}(?:\.\d{0,3})?|100(?:\.0*)?|0\.)$/).test(this.value) || this.value == '') {this.setAttribute('data-lastValid', this.value)} else {this.value = this.getAttribute('data-lastValid')}">%</li>
+        <li>Budget: $<input type="text" id="budget" data-lastValid="100.00" value="100.00" oninput="if (new RegExp(/^[0-9]+\.?([0-9]{1,2})?$/).test(this.value) || this.value == '') {this.setAttribute('data-lastValid', this.value)} else { this.value = this.getAttribute('data-lastValid')}"></li>
     </menu>
     <h1>Shopping Spree</h1>
     <p>Purchase stuff here.</p>
@@ -62,6 +63,10 @@
                 <tr>
                     <th>Total</th>
                     <td id="total" colspan="3">$0.00</td>
+                </tr>
+                <tr>
+                    <th>Balance Left</th>
+                    <td id="balance" colspan="3">$100.00</td>
                 </tr>
             </tfoot>
         </table>
