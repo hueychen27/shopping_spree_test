@@ -4,6 +4,20 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 })
 
+function mediaQueryFunction(mediaQuery) {
+    if (!mediaQuery.matches) {
+        document.querySelectorAll(".listItem, .quantityLabel").forEach((e) => { e.innerHTML = e.innerHTML.replace(/<br>/, " ") });
+        return;
+    }
+    document.querySelectorAll(".listItem, .quantityLabel").forEach((e) => { e.innerHTML = e.innerHTML.replace(/ /, "<br>") });
+}
+
+const mediaQuery = window.matchMedia("(max-width: 310px)");
+
+mediaQueryFunction(mediaQuery)
+
+mediaQuery.addEventListener("change", mediaQueryFunction)
+
 function hardRefresh() {
     if ('URL' in window) {
         const url = new URL(window.location.href);
@@ -75,13 +89,13 @@ function createItemBox() {
     let name2 = "#" + i;
     div.className = "itemBox";
     div.innerHTML = `
-<h1>${name2}</h1>
+<h2>${name2}</h2>
 <p>Description:</p>
 <ul>
-    <li>Name: <input class="nameThing" type="text" data-lastValid="${name}" value="${name}" oninput="if (items.get(this.value) == undefined && new RegExp(/^[\\w\\-\\' ]+$/).test(this.value)) {items = rename(items, this.getAttribute('data-lastValid'), this.value),this.setAttribute('data-lastValid', this.value)} else {this.value = this.getAttribute('data-lastValid')}"></li>
-    <li>Price: $<input class="priceThing" type="text" data-lastValid="1.00" oninput="if (new RegExp(/^[0-9]+\\.?([0-9]{1,2})?$/).test(this.value)) {this.setAttribute('data-lastValid', this.value), items.set(this.parentElement.previousElementSibling.querySelector('input').getAttribute('data-lastValid'), {price: this.value, quantity: items.get(this.parentElement.previousElementSibling.querySelector('input').getAttribute('data-lastValid')).quantity})} else { this.value = this.getAttribute('data-lastValid')} // https://stackoverflow.com/a/41981763/15055490" value="1.00"></li>
+    <li class="listItem">Name: <input class="nameThing" type="text" data-lastValid="${name}" value="${name}" oninput="if (items.get(this.value) == undefined && new RegExp(/^[\\w\\-\\' ]+$/).test(this.value)) {items = rename(items, this.getAttribute('data-lastValid'), this.value),this.setAttribute('data-lastValid', this.value)} else {this.value = this.getAttribute('data-lastValid')}"></li>
+    <li class="listItem">Price: $<input class="priceThing" type="text" data-lastValid="1.00" oninput="if (new RegExp(/^[0-9]+\\.?([0-9]{1,2})?$/).test(this.value)) {this.setAttribute('data-lastValid', this.value), items.set(this.parentElement.previousElementSibling.querySelector('input').getAttribute('data-lastValid'), {price: this.value, quantity: items.get(this.parentElement.previousElementSibling.querySelector('input').getAttribute('data-lastValid')).quantity})} else { this.value = this.getAttribute('data-lastValid')} // https://stackoverflow.com/a/41981763/15055490" value="1.00"></li>
 </ul>
-<label>Quantity: <input class="quantityThing" type="text" data-lastValid="0" value="0" oninput="if (new RegExp(/^[0-9]{1,10}$/).test(this.value) || this.value == '') {this.setAttribute('data-lastValid', this.value), items.set(this.parentElement.previousElementSibling.querySelector('input').getAttribute('data-lastValid'), {price: items.get(this.parentElement.previousElementSibling.querySelector('input').getAttribute('data-lastValid')).price, quantity: this.value})} else { this.value = this.getAttribute('data-lastValid')} // https://stackoverflow.com/a/41981763/15055490"></label>
+<label class="quantityLabel">Quantity: <input class="quantityThing" type="text" data-lastValid="0" value="0" oninput="if (new RegExp(/^[0-9]{1,10}$/).test(this.value) || this.value == '') {this.setAttribute('data-lastValid', this.value), items.set(this.parentElement.previousElementSibling.querySelector('input').getAttribute('data-lastValid'), {price: items.get(this.parentElement.previousElementSibling.querySelector('input').getAttribute('data-lastValid')).price, quantity: this.value})} else { this.value = this.getAttribute('data-lastValid')} // https://stackoverflow.com/a/41981763/15055490"></label>
 <button class="remove" onclick="removeItemBox(this.parentElement);"><i class="fas fa-trash-xmark fa-xl"></i>Delete</button>
     `;
     items.set(name, {

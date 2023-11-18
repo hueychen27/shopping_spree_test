@@ -72,13 +72,10 @@ th {
     text-align: center;
 }
 
-ul {
-    width: 100%;
-    overflow-x: auto;
-}
-
 li {
     list-style-type: none;
+    width: fit-content;
+    display: block;
 }
 
 button {
@@ -91,7 +88,6 @@ input {
 }
 
 .itemBox {
-    position: relative;
     flex-shrink: 0;
     height: clamp(190px, 190px, 190px);
     border: 1px solid rgb(155, 155, 155);
@@ -105,10 +101,9 @@ input {
     overflow: auto;
 }
 
-.itemBox > h1 {
+.itemBox > h2 {
     position: absolute;
-    top: -3px;
-    overflow: auto;
+    top: 2px;
 }
 
 .remove {
@@ -136,6 +131,7 @@ input {
 }
 
 #stuff {
+    position: relative;
     display: inline-flex;
     -ms-flex-flow: row wrap;
     flex-flow: row wrap;
@@ -143,7 +139,7 @@ input {
     min-height: 190px;
     height: 50vh;
     overflow-y: auto;
-    width: 100%;
+    width: fit-content;
 }
 
 #addNew {
@@ -160,6 +156,7 @@ input {
 #receipt {
     height: 30vh;
     overflow-y: auto;
+    width: fit-content;
 }
 
 #receiptHeader {
@@ -183,9 +180,9 @@ input {
     }
 }
 
-@media only screen and (max-width: 300px) {
+@media only screen and (max-width: 310px) {
     .itemBox {
-        height: 220px;
+        height: 240px;
     }
 }
 

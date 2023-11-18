@@ -8,6 +8,7 @@ This has:
 - formatting numbers with commas (1,000.00) or number words (4.43534 septuagintillion.)
 - deletion of items functionality
 - my first usage of the map data type
+- balance left
 # Credits
 Credits to:
 - Font Awesome Pro
