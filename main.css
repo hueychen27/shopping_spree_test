@@ -88,6 +88,7 @@ input {
 }
 
 .itemBox {
+    position: relative;
     flex-shrink: 0;
     height: clamp(190px, 190px, 190px);
     border: 1px solid rgb(155, 155, 155);
@@ -137,26 +138,24 @@ input {
     flex-flow: row wrap;
     gap: 10px;
     min-height: 190px;
-    height: 50vh;
+    height: clamp(fit-content, fit-content, 50vh);
     overflow-y: auto;
     width: fit-content;
 }
 
 #addNew {
     flex-shrink: 0;
-    margin-top: 70px;
     display: inline-block;
-    border-radius: 100px;
+    border-radius: 50%;
     width: 50px;
     height: 50px;
     text-align: center;
     border: 2px solid black;
+    align-self: center;
 }
 
 #receipt {
-    height: 30vh;
-    overflow-y: auto;
-    width: fit-content;
+    width: clamp(fit-content, 100%, 100%);
 }
 
 #receiptHeader {
