@@ -41,9 +41,7 @@ document.addEventListener("keydown", (e) => {
     }
 })
 
-const zeroIfEmpty = (val) => {
-    return val == "" ? 0 : val
-}
+const zeroIfEmpty = (val) => val == "" ? 0 : val;
 
 /**
  * Renames a key in a map by replacing it with a new key.
@@ -64,6 +62,13 @@ const rename = (map, oldKey, newKey) => {
     }
     return newMap;
 }
+
+/**
+ * Get .nameThing class in .itemBox element.
+ * 
+ * @param {Element} el 
+ */
+const getNameThing = (el) => el.closest('.itemBox').querySelector('.nameThing').getAttribute('data-lastValid');
 
 let items = new Map();
 items.set("item1", {
@@ -93,9 +98,9 @@ function createItemBox() {
 <p>Description:</p>
 <ul>
     <li class="listItem">Name: <input class="nameThing" type="text" data-lastValid="${name}" value="${name}" oninput="if (items.get(this.value) == undefined && new RegExp(/^[\\w\\-\\' ]+$/).test(this.value)) {items = rename(items, this.getAttribute('data-lastValid'), this.value),this.setAttribute('data-lastValid', this.value)} else {this.value = this.getAttribute('data-lastValid')}"></li>
-    <li class="listItem">Price: $<input class="priceThing" type="text" data-lastValid="1.00" oninput="if (new RegExp(/^[0-9]+\\.?([0-9]{1,2})?$/).test(this.value)) {this.setAttribute('data-lastValid', this.value), items.set(this.parentElement.previousElementSibling.querySelector('input').getAttribute('data-lastValid'), {price: this.value, quantity: items.get(this.parentElement.previousElementSibling.querySelector('input').getAttribute('data-lastValid')).quantity})} else { this.value = this.getAttribute('data-lastValid')} // https://stackoverflow.com/a/41981763/15055490" value="1.00"></li>
+    <li class="listItem">Price: <input class="priceThing" type="text" data-lastValid="1.00" oninput="if (new RegExp(/^[0-9]+\\.?([0-9]{1,2})?$/).test(this.value)) {this.setAttribute('data-lastValid', this.value), items.set(getNameThing(this), {price: this.value, quantity: items.get(getNameThing(this)).quantity})} else { this.value = this.getAttribute('data-lastValid')} // https://stackoverflow.com/a/41981763/15055490" value="1.00"></li>
 </ul>
-<label class="quantityLabel">Quantity: <input class="quantityThing" type="text" data-lastValid="0" value="0" oninput="if (new RegExp(/^[0-9]{1,10}$/).test(this.value) || this.value == '') {this.setAttribute('data-lastValid', this.value), items.set(this.parentElement.previousElementSibling.querySelector('input').getAttribute('data-lastValid'), {price: items.get(this.parentElement.previousElementSibling.querySelector('input').getAttribute('data-lastValid')).price, quantity: this.value})} else { this.value = this.getAttribute('data-lastValid')} // https://stackoverflow.com/a/41981763/15055490"></label>
+<label class="quantityLabel">Quantity: <input class="quantityThing" type="text" data-lastValid="0" value="0" oninput="if (new RegExp(/^[0-9]{1,10}$/).test(this.value) || this.value == '') {this.setAttribute('data-lastValid', this.value), items.set(getNameThing(this), {price: items.get(getNameThing(this)).price, quantity: this.value})} else { this.value = this.getAttribute('data-lastValid')} // https://stackoverflow.com/a/41981763/15055490"></label>
 <button class="remove" onclick="removeItemBox(this.parentElement);"><i class="fas fa-trash-xmark fa-xl"></i>Delete</button>
     `;
     items.set(name, {
@@ -120,9 +125,7 @@ function numberWithCommas(x, integer = false) {
     return x < 1000000 ? parseFloat(x).toFixed(2).toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ",") : numberformat.format(parseFloat(x));
 }
 
-function formatNegativeMoney(m) {
-    return m.replace(/^\$-/, "-$");
-}
+const formatNegativeMoney = (m) => m.replace(/^\$-/, "-$");
 
 function updateTotal() {
     document.getElementById('tbody').innerHTML = "<tr style='display: none'></tr>";
@@ -143,10 +146,16 @@ function updateTotal() {
     total = total.toFixed(2);
     document.getElementById("subtotal").innerHTML = "$" + numberWithCommas(total);
     const tax = (total * (zeroIfEmpty(document.getElementById("taxInput").getAttribute("data-lastValid")) / 100)).toFixed(2);
+    const tip = ((parseFloat(total) + parseFloat(tax)).toFixed(2) * (zeroIfEmpty(document.getElementById("tipInput").getAttribute("data-lastValid")) / 100)).toFixed(2);
+    total = parseFloat((parseFloat(total) + parseFloat(tax)).toFixed(2));
     document.getElementById("taxPercent").innerHTML = parseFloat(zeroIfEmpty(document.getElementById("taxInput").getAttribute("data-lastValid")));
+    document.getElementById("tipPercent").innerHTML = parseFloat(zeroIfEmpty(document.getElementById("tipInput").getAttribute("data-lastValid")));
     document.getElementById("tax").innerHTML = "$" + numberWithCommas(tax);
-    document.getElementById("total").innerHTML = "$" + numberWithCommas((parseFloat(total) + parseFloat(tax)).toFixed(2));
-    document.getElementById("balance").innerHTML = formatNegativeMoney("$" + numberWithCommas((parseFloat(document.getElementById("budget").value) - parseFloat(total)).toFixed(2)));
+    document.getElementById("preTipTotal").innerHTML = "$" + numberWithCommas(total);
+    document.getElementById("tip").innerHTML = "$" + numberWithCommas(tip);
+    total = parseFloat((total + parseFloat(tip)).toFixed(2));
+    document.getElementById("total").innerHTML = "$" + numberWithCommas(total);
+    document.getElementById("balance").innerHTML = formatNegativeMoney("$" + numberWithCommas((parseFloat(zeroIfEmpty(document.getElementById("budget").value)) - total).toFixed(2)));
     document.getElementById("balance").style.color = document.getElementById("balance").innerHTML.indexOf("-") == -1 ? "green" : "red";
     window.requestAnimationFrame(updateTotal);
 }
