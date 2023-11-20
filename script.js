@@ -4,6 +4,10 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 })
 
+/**
+ * Function to add a `<br>` element to for a mobile friendly experience. :)
+ * @param {MediaQueryList} mediaQuery
+ */
 function mediaQueryFunction(mediaQuery) {
     if (!mediaQuery.matches) {
         document.querySelectorAll(".listItem, .quantityLabel").forEach((e) => { e.innerHTML = e.innerHTML.replace(/<br>/, " ") });
@@ -41,6 +45,9 @@ document.addEventListener("keydown", (e) => {
     }
 })
 
+/**
+ * If val is an empty string, return 0. Otherwise, return val.
+ */
 const zeroIfEmpty = (val) => val == "" ? 0 : val;
 
 /**
@@ -114,7 +121,10 @@ function createItemBox() {
         top: stuffSection.scrollHeight
     })
 }
-
+/**
+ * Remove itembox forever
+ * @param {Element} element 
+ */
 function removeItemBox(element) {
     items.delete(element.querySelector(".nameThing").getAttribute("data-lastValid"));
     element.remove();
@@ -144,19 +154,26 @@ function updateTotal() {
         total += item.price * zeroIfEmpty(item.quantity)
     })
     total = total.toFixed(2);
+
     document.getElementById("subtotal").innerHTML = "$" + numberWithCommas(total);
+
     const tax = (total * (zeroIfEmpty(document.getElementById("taxInput").getAttribute("data-lastValid")) / 100)).toFixed(2);
     const tip = ((parseFloat(total) + parseFloat(tax)).toFixed(2) * (zeroIfEmpty(document.getElementById("tipInput").getAttribute("data-lastValid")) / 100)).toFixed(2);
+
     total = parseFloat((parseFloat(total) + parseFloat(tax)).toFixed(2));
+
     document.getElementById("taxPercent").innerHTML = parseFloat(zeroIfEmpty(document.getElementById("taxInput").getAttribute("data-lastValid")));
     document.getElementById("tipPercent").innerHTML = parseFloat(zeroIfEmpty(document.getElementById("tipInput").getAttribute("data-lastValid")));
     document.getElementById("tax").innerHTML = "$" + numberWithCommas(tax);
     document.getElementById("preTipTotal").innerHTML = "$" + numberWithCommas(total);
     document.getElementById("tip").innerHTML = "$" + numberWithCommas(tip);
+
     total = parseFloat((total + parseFloat(tip)).toFixed(2));
+
     document.getElementById("total").innerHTML = "$" + numberWithCommas(total);
     document.getElementById("balance").innerHTML = formatNegativeMoney("$" + numberWithCommas((parseFloat(zeroIfEmpty(document.getElementById("budget").value)) - total).toFixed(2)));
     document.getElementById("balance").style.color = document.getElementById("balance").innerHTML.indexOf("-") == -1 ? "green" : "red";
+
     window.requestAnimationFrame(updateTotal);
 }
 
