@@ -167,15 +167,15 @@ function numberWithCommas(x, integer = false) {
  */
 const formatNegativeMoney = (m) => m.replace(/^\$-/, "-$");
 
-function updateTotal() {
-    document.getElementById('tbody').innerHTML = "<tr style='display: none'></tr>";
+async function updateTotal() {
     let total = 0.00;
+    let array = ["<tr style='display: none'></tr>"];
     for (const [key, value] of items) {
         const preTotal = value.price * zeroIfEmpty(value.quantity);
         const discount = value.discount.toString().indexOf('%') > -1 ? parseFloat((zeroIfEmpty(value.discount.toString().slice(0, -1)) / 100) * preTotal).toFixed(2) : parseFloat(zeroIfEmpty(value.discount));
         const discountedTotal = parseFloat((preTotal - (discount)).toFixed(2));
         total += parseFloat(discountedTotal.toFixed(2));
-        document.getElementById("tbody").innerHTML += `
+        array.push(`
             <tr>
                 <td>${key}</td>
                 <td>$${numberWithCommas(value.price)}</td>
@@ -184,7 +184,10 @@ function updateTotal() {
                 <td>-$${numberWithCommas(discount)}</td>
                 <td>$${numberWithCommas(discountedTotal)}</td>
             </tr>
-        `;
+        `)
+    }
+    if (array.length > 0) {
+        document.getElementById("tbody").innerHTML = array.join("");
     }
 
     document.getElementById("subtotal").innerHTML = "$" + numberWithCommas(total);

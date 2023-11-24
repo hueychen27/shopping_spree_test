@@ -243,7 +243,9 @@ input {
 }
 
 #receipt {
-    width: clamp(fit-content, 100%, 100%);
+    min-width: fit-content;
+    width: 100%;
+    max-width: 100%;
 }
 
 #receiptHeader {
