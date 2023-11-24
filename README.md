@@ -9,6 +9,8 @@ This has:
 - deletion of items functionality
 - my first usage of the map data type
 - balance left
+- a favicon (shopping cart SVG) which I have procrastinated to add
+- discount (percentage and absolute value) functionality
 # Credits
 Credits to:
 - Font Awesome Pro
@@ -16,3 +18,4 @@ Credits to:
 - [Netlify](https://netlify.com)
 - [Merchant Copy Font](https://www.fontspace.com/merchant-copy-font-f1387)
 - [Github](https://github.com)
+- [Shopping Cart SVG](https://svgsilh.com/image/294547.html)

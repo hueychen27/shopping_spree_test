@@ -5,6 +5,7 @@
     <script src="formatNumber.js"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="shopping_cart.svg" rel="icon" type="image/svg">
     <link href="all.min.css" rel="stylesheet" type="text/css">
     <link href="woff2.min.css" rel="stylesheet" type="text/css">
     <link href="main.css" rel="stylesheet" type="text/css">
@@ -26,9 +27,14 @@
             <p>Description:</p>
             <ul>
                 <li class="listItem">Name: <input class="nameThing" type="text" data-lastValid="item1" value="item1" oninput="if (items.get(this.value) == undefined && new RegExp(/^[\w\-\' ]+$/).test(this.value)) {items = rename(items, this.getAttribute('data-lastValid'), this.value),this.setAttribute('data-lastValid', this.value)} else {this.value = this.getAttribute('data-lastValid')}"></li>
-                <li class="listItem">Price: <input class="priceThing" type="text" data-lastValid="1.00" oninput="if (new RegExp(/^[0-9]+\.?([0-9]{1,2})?$/).test(this.value)) {this.setAttribute('data-lastValid', this.value), items.set(getNameThing(this), {price: this.value, quantity: items.get(getNameThing(this)).quantity})} else { this.value = this.getAttribute('data-lastValid')} // https://stackoverflow.com/a/41981763/15055490" value="1.00"></li>
+                <li class="listItem">Price: <input class="priceThing" type="text" data-lastValid="1.00" oninput="if (new RegExp(/^[0-9]+\.?([0-9]{1,2})?$/).test(this.value)) {this.setAttribute('data-lastValid', this.value), items.set(getNameThing(this), {price: this.value, quantity: items.get(getNameThing(this)).quantity, discount: items.get(getNameThing(this)).discount})} else { this.value = this.getAttribute('data-lastValid')} // https://stackoverflow.com/a/41981763/15055490" value="1.00"></li>
             </ul>
-            <label class="quantityLabel">Quantity: <input class="quantityThing" type="text" data-lastValid="0" value="0" oninput="if (new RegExp(/^[0-9]{1,10}$/).test(this.value) || this.value == '') {this.setAttribute('data-lastValid', this.value), items.set(getNameThing(this), {price: items.get(getNameThing(this)).price, quantity: this.value})} else { this.value = this.getAttribute('data-lastValid')} // https://stackoverflow.com/a/41981763/15055490"></label>
+            <label class="label">Quantity: <input class="quantityThing" type="text" data-lastValid="0" value="0" oninput="if (new RegExp(/^[0-9]{1,10}$/).test(this.value) || this.value == '') {this.setAttribute('data-lastValid', this.value), items.set(getNameThing(this), {price: items.get(getNameThing(this)).price, quantity: this.value, discount: items.get(getNameThing(this)).discount})} else { this.value = this.getAttribute('data-lastValid')} // https://stackoverflow.com/a/41981763/15055490"></label>
+            <label class="label">Discount: <input class="discountThing" type="text" data-lastValid="0" data-regex="^(?:\d{1,2}(?:\.\d{0,3})?|100(?:\.0*)?|0\.)$" value="0" oninput="if (new RegExp(this.getAttribute('data-regex')).test(this.value) || this.value == '') {this.setAttribute('data-lastValid', this.value), items.set(getNameThing(this), {price: items.get(getNameThing(this)).price, quantity: items.get(getNameThing(this)).quantity, discount: this.value.toString()+this.nextElementSibling.innerHTML.toString()})} else { this.value = this.getAttribute('data-lastValid')} // https://stackoverflow.com/a/41981763/15055490"><span class="discountType">%</span></label>
+            <label class="label">Discount Type: <select class="discountTypeThing" onchange="this.closest('.itemBox').querySelector('.discountType').innerHTML = this.value; const discountThing = this.closest('.itemBox').querySelector('.discountThing'); discountThing.setAttribute('data-regex', (this.value == '' ? '^[0-9]+\\.?([0-9]{1,2})?$' : '^(?:\\d{1,2}(?:\\.\\d{0,3})?|100(?:\\.0*)?|0\\.)$')); discountThing.value = trimLastChar(discountThing.value, new RegExp(discountThing.getAttribute('data-regex'))); discountThing.setAttribute('data-lastValid', discountThing.value)">
+                    <option value="%">Percent</option>
+                    <option value="">Absolute</option>
+                </select></label>
             <button class="remove" onclick="removeItemBox(this.parentElement);"><i class="fas fa-trash-xmark fa-xl"></i>Delete</button>
         </div>
         <button id="addNew" onclick="createItemBox();" title="Add another item!"><i class="fal fa-plus"></i></button>
@@ -42,14 +48,18 @@
                     <th scope="col">Unit Price</th>
                     <th scope="col"><abbr title="Quantity">Qty.</abbr></th>
                     <th scope="col">Calculated Price</th>
+                    <th scope="col">Discount</th>
+                    <th scope="col">Running Total</th>
                 </tr>
             </thead>
             <tbody id="tbody">
                 <tr>
                     <td>item1</td>
                     <td>$1.00</td>
-                    <td>1</td>
-                    <td>$1.00</td>
+                    <td>0</td>
+                    <td>$0.00</td>
+                    <td>-$0.00</td>
+                    <td>$0.00</td>
                 </tr>
             </tbody>
             <tfoot>
@@ -63,19 +73,19 @@
                 </tr>
                 <tr>
                     <th>Pre-tip Total</th>
-                    <td id="preTipTotal" colspan="3">$0.00</td>
+                    <td id="preTipTotal" colspan="4">$0.00</td>
                 </tr>
                 <tr>
                     <th>Tip (<span id="tipPercent">0</span>%)</th>
-                    <td id="tip" colspan="3">$0.00</td>
+                    <td id="tip" colspan="4">$0.00</td>
                 </tr>
                 <tr>
                     <th>Total</th>
-                    <td id="total" colspan="3">$0.00</td>
+                    <td id="total" colspan="4">$0.00</td>
                 </tr>
                 <tr>
                     <th>Balance Left</th>
-                    <td id="balance" colspan="3">$100.00</td>
+                    <td id="balance" colspan="4">$100.00</td>
                 </tr>
             </tfoot>
         </table>
