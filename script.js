@@ -125,7 +125,7 @@ function createItemBox() {
 </ul>
 <label class="label">Quantity: <input class="quantityThing" type="text" data-lastValid="0" value="0" oninput="if (new RegExp(/^[0-9]{1,10}$/).test(this.value) || this.value == '') {this.setAttribute('data-lastValid', this.value), items.set(getNameThing(this), {price: items.get(getNameThing(this)).price, quantity: this.value, discount: items.get(getNameThing(this)).discount})} else { this.value = this.getAttribute('data-lastValid')} // https://stackoverflow.com/a/41981763/15055490"></label>
 <label class="label">Discount: <input class="discountThing" type="text" data-lastValid="0" data-regex="^(?:\\d{1,2}(?:\\.\\d{0,3})?|100(?:\\.0*)?|0\\.)$" value="0" oninput="if (new RegExp(this.getAttribute('data-regex')).test(this.value) || this.value == '') {this.setAttribute('data-lastValid', this.value), items.set(getNameThing(this), {price: items.get(getNameThing(this)).price, quantity: items.get(getNameThing(this)).quantity, discount: this.value.toString()+this.nextElementSibling.innerHTML.toString()})} else { this.value = this.getAttribute('data-lastValid')} // https://stackoverflow.com/a/41981763/15055490"><span class="discountType">%</span></label>
-<label class="label">Discount Type: <select class="discountTypeThing" onchange="this.closest('.itemBox').querySelector('.discountType').innerHTML = this.value; const discountThing = this.closest('.itemBox').querySelector('.discountThing'); discountThing.setAttribute('data-regex', (this.value == '' ? '^[0-9]+\\\.?([0-9]{1,2})?$' : '^(?:\\\d{1,2}(?:\\\.\\\d{0,3})?|100(?:\\\.0*)?|0\\\.)$')); discountThing.value = trimLastChar(discountThing.value, new RegExp(discountThing.getAttribute('data-regex'))); discountThing.setAttribute('data-lastValid', discountThing.value)">
+<label class="label">Discount Type: <select class="discountTypeThing" onchange="this.closest('.itemBox').querySelector('.discountType').innerHTML = this.value; const discountThing = this.closest('.itemBox').querySelector('.discountThing'); discountThing.setAttribute('data-regex', (this.value == '' ? '^[0-9]+\\\\.?([0-9]{1,2})?$' : '^(?:\\\\d{1,2}(?:\\\\.\\\\d{0,3})?|100(?:\\\\.0*)?|0\\\\.)$')); discountThing.value = trimLastChar(discountThing.value, new RegExp(discountThing.getAttribute('data-regex'))); discountThing.setAttribute('data-lastValid', discountThing.value)">
         <option value="%">Percent</option>
         <option value="">Absolute</option>
     </select></label>
@@ -167,27 +167,19 @@ function numberWithCommas(x, integer = false) {
  */
 const formatNegativeMoney = (m) => m.replace(/^\$-/, "-$");
 
-async function updateTotal() {
+function updateTotal() {
     let total = 0.00;
-    let array = ["<tr style='display: none'></tr>"];
+    let html = [];
     for (const [key, value] of items) {
         const preTotal = value.price * zeroIfEmpty(value.quantity);
         const discount = value.discount.toString().indexOf('%') > -1 ? parseFloat((zeroIfEmpty(value.discount.toString().slice(0, -1)) / 100) * preTotal).toFixed(2) : parseFloat(zeroIfEmpty(value.discount));
         const discountedTotal = parseFloat((preTotal - (discount)).toFixed(2));
         total += parseFloat(discountedTotal.toFixed(2));
-        array.push(`
-            <tr>
-                <td>${key}</td>
-                <td>$${numberWithCommas(value.price)}</td>
-                <td>${numberWithCommas(zeroIfEmpty(value.quantity), true)}</td>
-                <td>$${numberWithCommas(preTotal)}</td>
-                <td>-$${numberWithCommas(discount)}</td>
-                <td>$${numberWithCommas(discountedTotal)}</td>
-            </tr>
-        `)
+        html.push(`<tr><td>${key}</td><td>$${numberWithCommas(value.price)}</td><td>${numberWithCommas(zeroIfEmpty(value.quantity), true)}</td><td>$${numberWithCommas(preTotal)}</td><td>-$${numberWithCommas(discount)}</td><td>$${numberWithCommas(discountedTotal)}</td></tr>`)
     }
-    if (array.length > 0) {
-        document.getElementById("tbody").innerHTML = array.join("");
+    const tbody = document.getElementById("tbody");
+    if (tbody.innerHTML.trim() != html.join("").trim()) {
+        tbody.innerHTML = html.join("");
     }
 
     document.getElementById("subtotal").innerHTML = "$" + numberWithCommas(total);
