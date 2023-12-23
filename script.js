@@ -194,7 +194,7 @@ function createItemBox(realName = "item", price = "1.00", quantity = 0, discount
     while (document.querySelector(`input.nameThing[data-lastValid=${'item' + j}]`) != null) {
         j++;
     }
-    const reused = document.querySelector(`input.nameThing[data-lastValid=${realName}]`) != null
+    const reused = document.querySelector(`input.nameThing[data-lastValid="${realName}"]`) != null
     let name = boring || reused ? "item" + j : realName;
     let name2 = "#" + i;
     div.className = "itemBox";
