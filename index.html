@@ -15,6 +15,13 @@
 
 <body>
     <menu id="menu">
+        <button id="saveFromLocalStorage">Save to localStorage</button>
+        <button id="saveAsText">Save as text</button>
+        <button id="saveToFile">Save to file</button>
+        <button id="loadFromLocalStorage">Load from localStorage</button>
+        <button id="loadFromText">Load text</button>
+        <button id="loadFromFile">Load from file</button>
+        <button id="clearLocalStorage">Clear localStorage</button>
         <li>Tax: <input type="text" id="taxInput" data-lastValid="0" value="0" oninput="if (new RegExp(/^(?:\d{1,2}(?:\.\d{0,3})?|100(?:\.0*)?|0\.)$/).test(this.value) || this.value == '') {this.setAttribute('data-lastValid', this.value)} else {this.value = this.getAttribute('data-lastValid')}">%</li>
         <li>Tip: <input type="text" id="tipInput" data-lastValid="0" value="0" oninput="if (new RegExp(/^(?:\d{1,2}(?:\.\d{0,3})?|100(?:\.0*)?|0\.)$/).test(this.value) || this.value == '') {this.setAttribute('data-lastValid', this.value)} else {this.value = this.getAttribute('data-lastValid')}">%</li>
         <li>Budget: $<input type="text" id="budget" data-lastValid="100.00" value="100.00" oninput="if (new RegExp(/^[0-9]+\.?([0-9]{1,2})?$/).test(this.value) || this.value == '') {this.setAttribute('data-lastValid', this.value)} else { this.value = this.getAttribute('data-lastValid')}"></li>
@@ -22,21 +29,6 @@
     <h1>Shopping Spree</h1>
     <p>Purchase stuff here.</p>
     <section id="stuff">
-        <div id="1" class="itemBox">
-            <h2>#1</h2>
-            <p>Description:</p>
-            <ul>
-                <li class="listItem">Name: <input class="nameThing" type="text" data-lastValid="item1" value="item1" oninput="if (items.get(this.value) == undefined && new RegExp(/^[\w\-\' ]+$/).test(this.value)) {items = rename(items, this.getAttribute('data-lastValid'), this.value),this.setAttribute('data-lastValid', this.value)} else {this.value = this.getAttribute('data-lastValid')}"></li>
-                <li class="listItem">Price: <input class="priceThing" type="text" data-lastValid="1.00" oninput="if (new RegExp(/^[0-9]+\.?([0-9]{1,2})?$/).test(this.value)) {this.setAttribute('data-lastValid', this.value), items.set(getNameThing(this), {price: this.value, quantity: items.get(getNameThing(this)).quantity, discount: items.get(getNameThing(this)).discount})} else { this.value = this.getAttribute('data-lastValid')} // https://stackoverflow.com/a/41981763/15055490" value="1.00"></li>
-            </ul>
-            <label class="label">Quantity: <input class="quantityThing" type="text" data-lastValid="0" value="0" oninput="if (new RegExp(/^[0-9]{1,10}$/).test(this.value) || this.value == '') {this.setAttribute('data-lastValid', this.value), items.set(getNameThing(this), {price: items.get(getNameThing(this)).price, quantity: this.value, discount: items.get(getNameThing(this)).discount})} else { this.value = this.getAttribute('data-lastValid')} // https://stackoverflow.com/a/41981763/15055490"></label>
-            <label class="label">Discount: <input class="discountThing" type="text" data-lastValid="0" data-regex="^(?:\d{1,2}(?:\.\d{0,3})?|100(?:\.0*)?|0\.)$" value="0" oninput="if (new RegExp(this.getAttribute('data-regex')).test(this.value) || this.value == '') {this.setAttribute('data-lastValid', this.value), items.set(getNameThing(this), {price: items.get(getNameThing(this)).price, quantity: items.get(getNameThing(this)).quantity, discount: this.value.toString()+this.nextElementSibling.innerHTML.toString()})} else { this.value = this.getAttribute('data-lastValid')} // https://stackoverflow.com/a/41981763/15055490"><span class="discountType">%</span></label>
-            <label class="label">Discount Type: <select class="discountTypeThing" onchange="this.closest('.itemBox').querySelector('.discountType').innerHTML = this.value; const discountThing = this.closest('.itemBox').querySelector('.discountThing'); discountThing.setAttribute('data-regex', (this.value == '' ? '^[0-9]+\\.?([0-9]{1,2})?$' : '^(?:\\d{1,2}(?:\\.\\d{0,3})?|100(?:\\.0*)?|0\\.)$')); discountThing.value = trimLastChar(discountThing.value, new RegExp(discountThing.getAttribute('data-regex'))); discountThing.setAttribute('data-lastValid', discountThing.value)">
-                    <option value="%">Percent</option>
-                    <option value="">Absolute</option>
-                </select></label>
-            <button class="remove" onclick="removeItemBox(this.parentElement);"><i class="fas fa-trash-xmark fa-xl"></i>Delete</button>
-        </div>
         <button id="addNew" onclick="createItemBox();" title="Add another item!"><i class="fal fa-plus"></i></button>
     </section>
     <section id="receipt">

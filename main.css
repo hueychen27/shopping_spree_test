@@ -175,6 +175,14 @@ input {
     min-width: 10px;
 }
 
+.tr:hover:nth-child(even) {
+    background-color: #e2e2e2;
+}
+
+.tr:hover:nth-child(odd) {
+    background-color: #e2e2e2;
+}
+
 .itemBox {
     position: relative;
     flex-shrink: 0;
