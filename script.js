@@ -103,10 +103,10 @@ const rename = (map, oldKey, newKey) => {
  * @returns {object}
  */
 function mapToObj(map) {
-    const obj = {}
+    const obj = {};
     for (let [k, v] of map)
-        obj[k] = v
-    return obj
+        obj[k] = v;
+    return obj;
 } // https://stackoverflow.com/a/44740579
 
 /**
@@ -117,8 +117,8 @@ function mapToObj(map) {
 function objToMap(obj) {
     const map = new Map();
     for (const [k, v] of Object.entries(obj))
-        map.set(k, v)
-    return map
+        map.set(k, v);
+    return map;
 }
 
 /**
@@ -142,17 +142,22 @@ const trimLastChar = (str, regex) => {
 }
 
 /**
- * @param {string} str 
+ * @param {string|object} str 
  */
 function parseData(str) {
     try {
-        const obj = JSON.parse(str);
+        let obj;
+        if (typeof str == "string") {
+            obj = JSON.parse(str);
+        } else if (typeof str != "object") {
+            throw new SyntaxError();
+        }
         for (const [, value] of Object.entries(obj)) {
             if ((!Object.keys(value).every((val) => val == "price" || val == "quantity" || val == "discount")) || Object.keys(value).length != 3) return `Either there is a value not named price, quantity, or discount or there are less or more than 3 values.\nFound error(s): ${value}`;
         }
-        return true
+        return true;
     } catch {
-        return "Invalid JSON"
+        return "Invalid JSON";
     }
 }
 
@@ -206,8 +211,8 @@ function createItemBox(realName = "item", price = "1.00", quantity = 0, discount
     <li class="listItem">Price: <input class="priceThing" type="text" data-lastValid="${price}" oninput="if (new RegExp(/^[0-9]+\.?([0-9]{1,2})?$/).test(this.value)) {this.setAttribute('data-lastValid', this.value), items.set(getNameThing(this), {price: this.value, quantity: items.get(getNameThing(this)).quantity, discount: items.get(getNameThing(this)).discount})} else { this.value = this.getAttribute('data-lastValid')} // https://stackoverflow.com/a/41981763/15055490" value="${price}"></li>
 </ul>
 <label class="label">Quantity: <input class="quantityThing" type="text" data-lastValid="${quantity}" value="${quantity}" oninput="if (new RegExp(/^[0-9]{1,10}$/).test(this.value) || this.value == '') {this.setAttribute('data-lastValid', this.value), items.set(getNameThing(this), {price: items.get(getNameThing(this)).price, quantity: this.value, discount: items.get(getNameThing(this)).discount})} else { this.value = this.getAttribute('data-lastValid')} // https://stackoverflow.com/a/41981763/15055490"></label>
-<label class="label">Discount: <input class="discountThing" type="text" data-lastValid="${discountData.discount}" data-regex="^(?:\\d{1,2}(?:\\.\\d{0,3})?|100(?:\\.0*)?|0\\.)$" value="0" oninput="if (new RegExp(this.getAttribute('data-regex')).test(this.value) || this.value == '') {this.setAttribute('data-lastValid', this.value), items.set(getNameThing(this), {price: items.get(getNameThing(this)).price, quantity: items.get(getNameThing(this)).quantity, discount: this.value.toString()+this.nextElementSibling.innerHTML.toString()})} else { this.value = this.getAttribute('data-lastValid')} // https://stackoverflow.com/a/41981763/15055490"><span class="discountType">${discount.replace(/[\d.]/, "")}</span></label>
-<label class="label">Discount Type: <select class="discountTypeThing" onchange="this.closest('.itemBox').querySelector('.discountType').innerHTML = this.value; const discountThing = this.closest('.itemBox').querySelector('.discountThing'); discountThing.setAttribute('data-regex', (this.value == '' ? '^[0-9]+\\\\.?([0-9]{1,2})?$' : '^(?:\\\\d{1,2}(?:\\\\.\\\\d{0,3})?|100(?:\\\\.0*)?|0\\\\.)$')); discountThing.value = trimLastChar(discountThing.value, new RegExp(discountThing.getAttribute('data-regex'))); discountThing.setAttribute('data-lastValid', discountThing.value)">
+<label class="label">Discount: <input class="discountThing" type="text" data-lastValid="${discountData.discount}" data-regex="^(?:\\d{1,2}(?:\\.\\d{0,3})?|100(?:\\.0*)?|0\\.)$" value="${discountData.discount}" oninput="if (new RegExp(this.getAttribute('data-regex')).test(this.value) || this.value == '') {this.setAttribute('data-lastValid', this.value), items.set(getNameThing(this), {price: items.get(getNameThing(this)).price, quantity: items.get(getNameThing(this)).quantity, discount: this.value.toString()+this.nextElementSibling.innerHTML.toString()})} else { this.value = this.getAttribute('data-lastValid')} // https://stackoverflow.com/a/41981763/15055490"><span class="discountType">${discount.replace(/[\d.]/, "")}</span></label>
+<label class="label">Discount Type: <select class="discountTypeThing" onchange="this.closest('.itemBox').querySelector('.discountType').innerHTML = this.value; const discountThing = this.closest('.itemBox').querySelector('.discountThing'); discountThing.setAttribute('data-regex', (this.value == '' ? '^[0-9]+\\\\.?([0-9]{1,2})?$' : '^(?:\\\\d{1,2}(?:\\\\.\\\\d{0,3})?|100(?:\\\\.0*)?|0\\\\.)$')); discountThing.value = trimLastChar(discountThing.value, new RegExp(discountThing.getAttribute('data-regex'))); discountThing.setAttribute('data-lastValid', discountThing.value); items.set(getNameThing(this), {price: items.get(getNameThing(this)).price, quantity: items.get(getNameThing(this)).quantity, discount: this.parentElement.previousElementSibling.querySelector('.discountThing').value.toString()+this.parentElement.previousElementSibling.querySelector('.discountType').innerHTML.toString()})">
         <option value="%" ${discount.includes("%") ? "selected" : ""}>Percent</option>
         <option value="" ${discount.includes("%") ? "" : "selected"}>Absolute</option>
     </select></label>
@@ -231,6 +236,22 @@ function createItemBox(realName = "item", price = "1.00", quantity = 0, discount
 function removeItemBox(element) {
     items.delete(element.querySelector(".nameThing").getAttribute("data-lastValid"));
     element.remove();
+}
+
+function readFileAsync(file) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+
+        reader.onload = (e) => {
+            resolve(e.target.result);
+        }
+
+        reader.onerror = () => {
+            reject(undefined);
+        }
+
+        reader.readAsText(file);
+    });
 }
 
 document.addEventListener("click", async (e) => {
@@ -272,21 +293,21 @@ ${JSON.stringify(JSON.parse(localStorage.getItem('data') ?? JSON.stringify(mapTo
         fileInput.accept = '.json,.txt'
         fileInput.addEventListener('change', async (event) => {
             const file = event.target.files[0];
-            const fileData = await readFileAsync(file);
+            const fileData = await readFileAsync(file).then((data) => data).catch((e) => e);
             if (fileData === undefined) {
                 alert('File is undefined (check permissions?)');
             } else if (fileData.trim() != '') {
                 try {
                     const returnVal = parseData(fileData);
                     if (returnVal === true) {
-                        items = objToMap(JSON.parse(data));
+                        items = objToMap(JSON.parse(fileData));
                         load(items);
                     } else {
                         throw new SyntaxError(returnVal);
                     }
-                } catch (e) {
-                    if (e instanceof SyntaxError) {
-                        alert(e.message);
+                } catch (error) {
+                    if (error instanceof SyntaxError) {
+                        alert(error.message);
                     }
                 }
             } else {
@@ -300,22 +321,6 @@ ${JSON.stringify(JSON.parse(localStorage.getItem('data') ?? JSON.stringify(mapTo
         if (confirm('Clear localStorage?')) localStorage.removeItem('data');
     }
 })
-
-function readFileAsync(file) {
-    return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-
-        reader.onload = (event) => {
-            resolve(event.target.result);
-        };
-
-        reader.onerror = (event) => {
-            reject(event.target.error);
-        };
-
-        reader.readAsText(file);
-    });
-}
 
 /**
  * Use the numberformat.format method to format a number.
