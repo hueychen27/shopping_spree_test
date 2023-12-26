@@ -173,13 +173,75 @@ items.set("item1", {
  * @param {Map} map 
  */
 function load(map) {
-    document.getElementById("stuff").innerHTML = '<button id="addNew" onclick="createItemBox();" title="Add another item!"><i class="fal fa-plus"></i></button>'
+    document.getElementById("stuff").innerHTML = '<button id="addNew" title="Add another item!"><i class="fal fa-plus"></i></button>'
     map.forEach((el, name) => {
         createItemBox(name, el.price, el.quantity, el.discount, false);
     })
 }
 
 load(items);
+
+document.addEventListener("input", (e) => {
+    const rest = items.get(getNameThing(e.target));
+    switch (e.target.className) {
+        case "nameThing":
+            if (items.get(e.target.value) == undefined && new RegExp(/^[\w\-\' ]+$/).test(e.target.value)) {
+                items = rename(items, e.target.getAttribute('data-lastValid'), e.target.value);
+                e.target.setAttribute('data-lastValid', e.target.value);
+            } else {
+                e.target.value = e.target.getAttribute('data-lastValid');
+            }
+            break;
+        case "priceThing":
+            if (new RegExp(/^[0-9]+\.?([0-9]{1,2})?$/).test(e.target.value)) {
+                e.target.setAttribute('data-lastValid', e.target.value);
+                items.set(getNameThing(e.target), {
+                    ...rest,
+                    price: e.target.value
+                })
+            } else {
+                e.target.value = e.target.getAttribute('data-lastValid');
+            } // https://stackoverflow.com/a/41981763/15055490
+            break;
+        case "quantityThing":
+            if (new RegExp(/^[0-9]{1,10}$/).test(e.target.value) || e.target.value == '') {
+                e.target.setAttribute('data-lastValid', e.target.value);
+                items.set(getNameThing(e.target), {
+                    ...rest,
+                    quantity: e.target.value
+                })
+            } else {
+                e.target.value = e.target.getAttribute('data-lastValid');
+            } // https://stackoverflow.com/a/41981763/15055490
+            break;
+        case "discountThing":
+            if (new RegExp(e.target.getAttribute('data-regex')).test(e.target.value) || e.target.value == '') {
+                e.target.setAttribute('data-lastValid', e.target.value);
+                items.set(getNameThing(e.target), {
+                    ...rest,
+                    discount: e.target.value.toString() + e.target.nextElementSibling.innerHTML.toString()
+                })
+            } else {
+                e.target.value = e.target.getAttribute('data-lastValid');
+            } // https://stackoverflow.com/a/41981763/15055490
+            break;
+    }
+})
+
+document.addEventListener("change", (e) => {
+    if (e.target.className == "discountTypeThing") {
+        e.target.closest('.itemBox').querySelector('.discountType').innerHTML = e.target.value;
+        const discountThing = e.target.closest('.itemBox').querySelector('.discountThing');
+        discountThing.setAttribute('data-regex', (e.target.value == '' ? '^[0-9]+\\.?([0-9]{1,2})?$' : '^(?:\\d{1,2}(?:\\.\\d{0,3})?|100(?:\\.0*)?|0\\.)$'));
+        discountThing.value = trimLastChar(discountThing.value, new RegExp(discountThing.getAttribute('data-regex')));
+        discountThing.setAttribute('data-lastValid', discountThing.value);
+        items.set(getNameThing(e.target), {
+            ...items.get(getNameThing(e.target)),
+            discount: e.target.parentElement.previousElementSibling.querySelector('.discountThing').value.toString() + e.target.parentElement.previousElementSibling.querySelector('.discountType').innerHTML.toString()
+        })
+    }
+})
+
 /**
  * Create item box
  */
@@ -207,16 +269,16 @@ function createItemBox(realName = "item", price = "1.00", quantity = 0, discount
 <h2>${name2}</h2>
 <p>Description:</p>
 <ul>
-    <li class="listItem">Name: <input class="nameThing" type="text" data-lastValid="${name}" value="${name}" oninput="if (items.get(this.value) == undefined && new RegExp(/^[\\w\\-\\' ]+$/).test(this.value)) {items = rename(items, this.getAttribute('data-lastValid'), this.value),this.setAttribute('data-lastValid', this.value)} else {this.value = this.getAttribute('data-lastValid')}"></li>
-    <li class="listItem">Price: <input class="priceThing" type="text" data-lastValid="${price}" oninput="if (new RegExp(/^[0-9]+\.?([0-9]{1,2})?$/).test(this.value)) {this.setAttribute('data-lastValid', this.value), items.set(getNameThing(this), {price: this.value, quantity: items.get(getNameThing(this)).quantity, discount: items.get(getNameThing(this)).discount})} else { this.value = this.getAttribute('data-lastValid')} // https://stackoverflow.com/a/41981763/15055490" value="${price}"></li>
+    <li class="listItem">Name: <input class="nameThing" type="text" data-lastValid="${name}" value="${name}"></li>
+    <li class="listItem">Price: <input class="priceThing" type="text" data-lastValid="${price}" value="${price}"></li>
 </ul>
-<label class="label">Quantity: <input class="quantityThing" type="text" data-lastValid="${quantity}" value="${quantity}" oninput="if (new RegExp(/^[0-9]{1,10}$/).test(this.value) || this.value == '') {this.setAttribute('data-lastValid', this.value), items.set(getNameThing(this), {price: items.get(getNameThing(this)).price, quantity: this.value, discount: items.get(getNameThing(this)).discount})} else { this.value = this.getAttribute('data-lastValid')} // https://stackoverflow.com/a/41981763/15055490"></label>
-<label class="label">Discount: <input class="discountThing" type="text" data-lastValid="${discountData.discount}" data-regex="^(?:\\d{1,2}(?:\\.\\d{0,3})?|100(?:\\.0*)?|0\\.)$" value="${discountData.discount}" oninput="if (new RegExp(this.getAttribute('data-regex')).test(this.value) || this.value == '') {this.setAttribute('data-lastValid', this.value), items.set(getNameThing(this), {price: items.get(getNameThing(this)).price, quantity: items.get(getNameThing(this)).quantity, discount: this.value.toString()+this.nextElementSibling.innerHTML.toString()})} else { this.value = this.getAttribute('data-lastValid')} // https://stackoverflow.com/a/41981763/15055490"><span class="discountType">${discount.replace(/[\d.]/, "")}</span></label>
-<label class="label">Discount Type: <select class="discountTypeThing" onchange="this.closest('.itemBox').querySelector('.discountType').innerHTML = this.value; const discountThing = this.closest('.itemBox').querySelector('.discountThing'); discountThing.setAttribute('data-regex', (this.value == '' ? '^[0-9]+\\\\.?([0-9]{1,2})?$' : '^(?:\\\\d{1,2}(?:\\\\.\\\\d{0,3})?|100(?:\\\\.0*)?|0\\\\.)$')); discountThing.value = trimLastChar(discountThing.value, new RegExp(discountThing.getAttribute('data-regex'))); discountThing.setAttribute('data-lastValid', discountThing.value); items.set(getNameThing(this), {price: items.get(getNameThing(this)).price, quantity: items.get(getNameThing(this)).quantity, discount: this.parentElement.previousElementSibling.querySelector('.discountThing').value.toString()+this.parentElement.previousElementSibling.querySelector('.discountType').innerHTML.toString()})">
+<label class="label">Quantity: <input class="quantityThing" type="text" data-lastValid="${quantity}" value="${quantity}"></label>
+<label class="label">Discount: <input class="discountThing" type="text" data-lastValid="${discountData.discount}" data-regex="^(?:\\d{1,2}(?:\\.\\d{0,3})?|100(?:\\.0*)?|0\\.)$" value="${discountData.discount}"><span class="discountType">${discount.replace(/[\d.]/, "")}</span></label>
+<label class="label">Discount Type: <select class="discountTypeThing">
         <option value="%" ${discount.includes("%") ? "selected" : ""}>Percent</option>
         <option value="" ${discount.includes("%") ? "" : "selected"}>Absolute</option>
     </select></label>
-<button class="remove" onclick="removeItemBox(this.parentElement);"><i class="fas fa-trash-xmark fa-xl"></i>Delete</button>`
+<button class="remove"><i class="fas fa-trash-xmark fa-xl"></i>Delete</button>`
     items.set(name, {
         price: price,
         quantity: quantity,
@@ -255,70 +317,78 @@ function readFileAsync(file) {
 }
 
 document.addEventListener("click", async (e) => {
-    if (e.target.id === "saveFromLocalStorage") {
-        if (confirm('Save to localStorage?')) localStorage.setItem('data', JSON.stringify(mapToObj(items)));
-    }
-    if (e.target.id === "saveAsText") {
-        alert(JSON.stringify(mapToObj(items)));
-    }
-    if (e.target.id === "saveToFile") {
-        download('data.json', JSON.stringify(mapToObj(items)))
-    }
-    if (e.target.id === "loadFromLocalStorage") {
-        if (confirm(`Do you want to load this data?
+    switch (e.target.id) {
+        case "saveFromLocalStorage":
+            if (confirm('Save to localStorage?')) localStorage.setItem('data', JSON.stringify(mapToObj(items)));
+            break;
+        case "saveAsText":
+            alert(JSON.stringify(mapToObj(items)));
+            break;
+        case "saveToFile":
+            download('data.json', JSON.stringify(mapToObj(items)));
+            break;
+        case "loadFromLocalStorage":
+            if (confirm(`Do you want to load this data?
 ${JSON.stringify(JSON.parse(localStorage.getItem('data') ?? JSON.stringify(mapToObj(items))), null, 4)}`)) {
-            items = objToMap(JSON.parse(localStorage.getItem('data')));
-            load(items);
-        }
-    }
-    if (e.target.id === "loadFromText") {
-        const data = prompt(`Put your data here.`, JSON.stringify(mapToObj(items)));
-        if (data != null) {
-            try {
-                const returnVal = parseData(data);
-                if (returnVal === true) {
-                    items = objToMap(JSON.parse(data));
-                    load(items);
-                } else {
-                    throw new SyntaxError(returnVal);
-                }
-            } catch (e) {
-                if (e instanceof SyntaxError) alert(e.message);
+                items = objToMap(JSON.parse(localStorage.getItem('data')));
+                load(items);
             }
-        }
-    }
-    if (e.target.id === "loadFromFile") {
-        const fileInput = document.createElement('input');
-        fileInput.type = 'file';
-        fileInput.accept = '.json,.txt'
-        fileInput.addEventListener('change', async (event) => {
-            const file = event.target.files[0];
-            const fileData = await readFileAsync(file).then((data) => data).catch((e) => e);
-            if (fileData === undefined) {
-                alert('File is undefined (check permissions?)');
-            } else if (fileData.trim() != '') {
+            break;
+        case "loadFromText":
+            const data = prompt(`Put your data here.`, JSON.stringify(mapToObj(items)));
+            if (data != null) {
                 try {
-                    const returnVal = parseData(fileData);
+                    const returnVal = parseData(data);
                     if (returnVal === true) {
-                        items = objToMap(JSON.parse(fileData));
+                        items = objToMap(JSON.parse(data));
                         load(items);
                     } else {
                         throw new SyntaxError(returnVal);
                     }
-                } catch (error) {
-                    if (error instanceof SyntaxError) {
-                        alert(error.message);
-                    }
+                } catch (e) {
+                    if (e instanceof SyntaxError) alert(e.message);
                 }
-            } else {
-                alert('The file is empty.');
             }
-        })
+            break;
+        case "loadFromFile":
+            const fileInput = document.createElement('input');
+            fileInput.type = 'file';
+            fileInput.accept = '.json,.txt'
+            fileInput.addEventListener('change', async (event) => {
+                const file = event.target.files[0];
+                const fileData = await readFileAsync(file).then((data) => data).catch((e) => e);
+                if (fileData === undefined) {
+                    alert('File is undefined (check permissions?)');
+                } else if (fileData.trim() != '') {
+                    try {
+                        const returnVal = parseData(fileData);
+                        if (returnVal === true) {
+                            items = objToMap(JSON.parse(fileData));
+                            load(items);
+                        } else {
+                            throw new SyntaxError(returnVal);
+                        }
+                    } catch (error) {
+                        if (error instanceof SyntaxError) {
+                            alert(error.message);
+                        }
+                    }
+                } else {
+                    alert('The file is empty.');
+                }
+            })
 
-        fileInput.click();
+            fileInput.click();
+            break;
+        case "clearLocalStorage":
+            if (confirm('Clear localStorage?')) localStorage.removeItem('data');
+            break;
+        case "addNew":
+            createItemBox();
+            break;
     }
-    if (e.target.id === "clearLocalStorage") {
-        if (confirm('Clear localStorage?')) localStorage.removeItem('data');
+    if (e.target.className == "remove") {
+        removeItemBox(e.target.parentElement);
     }
 })
 
