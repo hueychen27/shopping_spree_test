@@ -5,7 +5,7 @@ document.addEventListener("DOMContentLoaded", () => {
 })
 
 /**
- * Function to add a `<br>` element to for a mobile friendly experience. :)
+ * Function to add a `<br>` element for a mobile friendly experience. :)
  * @param {MediaQueryList} mediaQuery
  */
 function mediaQueryFunction(mediaQuery) {
@@ -17,7 +17,7 @@ function mediaQueryFunction(mediaQuery) {
     document.querySelectorAll(selector).forEach((e) => { e.innerHTML = e.innerHTML.replace(/(?<=:)\s/, "<br>") });
 }
 
-const mediaQuery = window.matchMedia("(max-width: 316px)");
+const mediaQuery = window.matchMedia("(max-width: 325px)");
 
 mediaQueryFunction(mediaQuery)
 
