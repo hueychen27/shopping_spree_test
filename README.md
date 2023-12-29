@@ -1,3 +1,5 @@
+# https://shopping-spree-test.netlify.app
+
 # What this
 This is a little tool for shopping.
 ## Features
@@ -11,6 +13,7 @@ This has:
 - balance left
 - a favicon (shopping cart SVG) which I have procrastinated to add
 - discount (percentage and absolute value) functionality
+- NEW save and load functionality
 # Credits
 Credits to:
 - Font Awesome Pro
