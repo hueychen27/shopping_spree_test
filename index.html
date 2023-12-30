@@ -22,14 +22,14 @@
         <button id="loadFromText">Load text</button>
         <button id="loadFromFile">Load from file</button>
         <button id="clearLocalStorage">Clear localStorage</button>
-        <li>Tax: <input type="text" id="taxInput" data-lastValid="0" value="0" oninput="if (new RegExp(/^(?:\d{1,2}(?:\.\d{0,3})?|100(?:\.0*)?|0\.)$/).test(this.value) || this.value == '') {this.setAttribute('data-lastValid', this.value)} else {this.value = this.getAttribute('data-lastValid')}">%</li>
-        <li>Tip: <input type="text" id="tipInput" data-lastValid="0" value="0" oninput="if (new RegExp(/^(?:\d{1,2}(?:\.\d{0,3})?|100(?:\.0*)?|0\.)$/).test(this.value) || this.value == '') {this.setAttribute('data-lastValid', this.value)} else {this.value = this.getAttribute('data-lastValid')}">%</li>
-        <li>Budget: $<input type="text" id="budget" data-lastValid="100.00" value="100.00" oninput="if (new RegExp(/^[0-9]+\.?([0-9]{1,2})?$/).test(this.value) || this.value == '') {this.setAttribute('data-lastValid', this.value)} else { this.value = this.getAttribute('data-lastValid')}"></li>
+        <li>Tax: <input type="text" id="taxInput" data-lastValid="0" value="0">%</li>
+        <li>Tip: <input type="text" id="tipInput" data-lastValid="0" value="0">%</li>
+        <li>Budget: $<input type="text" id="budget" data-lastValid="100.00" value="100.00"></li>
     </menu>
     <h1>Shopping Spree</h1>
     <p>Purchase stuff here.</p>
     <section id="stuff">
-        <button id="addNew" onclick="createItemBox();" title="Add another item!"><i class="fal fa-plus"></i></button>
+        <button id="addNew" title="Add another item!"><i class="fal fa-plus"></i></button>
     </section>
     <section id="receipt">
         <h2 id="receiptHeader">Receipt</h2>

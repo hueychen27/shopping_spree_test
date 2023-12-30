@@ -1,8 +1,30 @@
-document.addEventListener("DOMContentLoaded", () => {
-    if (((window.innerWidth > 0) ? window.innerWidth : screen.width) < 299) { // https://stackoverflow.com/a/6850319
-        alert("Your screen is too small to display this website.")
+if (((window.innerWidth > 0) ? window.innerWidth : screen.width) < 299) { // https://stackoverflow.com/a/6850319
+    alert("Your screen is too small to display this website.")
+}
+
+function getParameter(url, parameterName) {
+    return new URL(url).searchParams.get(parameterName) ?? 0;
+}
+
+/**
+ * 
+ * @param {HTMLInputElement} el 
+ * @param {string|number|null} val 
+ * @param {RegExp|string} regex 
+ * @returns 
+ */
+function setInput(el, val, regex = undefined) {
+    if (regex != undefined || regex != null) {
+        if (!new RegExp(regex).test(val)) return null;
     }
-})
+    if (val == null) return val;
+    el.setAttribute("data-lastValid", val);
+    el.value = val;
+}
+
+setInput(document.getElementById("taxInput"), getParameter(window.location.href, "tax"), /^(?:\d{1,2}(?:\.\d{0,3})?|100(?:\.0*)?|0\.)$/);
+setInput(document.getElementById("tipInput"), getParameter(window.location.href, "tip"), /^(?:\d{1,2}(?:\.\d{0,3})?|100(?:\.0*)?|0\.)$/);
+setInput(document.getElementById("budget"), getParameter(window.location.href, "budget"), /^[0-9]+\.?([0-9]{1,2})?$/);
 
 /**
  * Function to add a `<br>` element for a mobile friendly experience. :)
@@ -224,6 +246,29 @@ document.addEventListener("input", (e) => {
             } else {
                 e.target.value = e.target.getAttribute('data-lastValid');
             } // https://stackoverflow.com/a/41981763/15055490
+            break;
+    }
+    switch (e.target.id) {
+        case "taxInput":
+            if (/^(?:\d{1,2}(?:\.\d{0,3})?|100(?:\.0*)?|0\.)$/.test(e.target.value) || e.target.value == '') {
+                e.target.setAttribute('data-lastValid', e.target.value);
+            } else {
+                e.target.value = e.target.getAttribute('data-lastValid');
+            }
+            break;
+        case "tipInput":
+            if (/^(?:\d{1,2}(?:\.\d{0,3})?|100(?:\.0*)?|0\.)$/.test(e.target.value) || e.target.value == '') {
+                e.target.setAttribute('data-lastValid', e.target.value);
+            } else {
+                e.target.value = e.target.getAttribute('data-lastValid');
+            }
+            break;
+        case "budget":
+            if (/^[0-9]+\.?([0-9]{1,2})?$/.test(e.target.value) || e.target.value == '') {
+                e.target.setAttribute('data-lastValid', e.target.value);
+            } else {
+                e.target.value = e.target.getAttribute('data-lastValid');
+            }
             break;
     }
 })
