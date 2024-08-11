@@ -148,7 +148,7 @@ function objToMap(obj) {
  * 
  * @param {Element} el 
  */
-const getNameThing = (el) => el.closest('.itemBox').querySelector('.nameThing').getAttribute('data-lastValid');
+const getNameThing = (el) => el.closest('.itemBox')?.querySelector('.nameThing').getAttribute('data-lastValid');
 
 /**
  * Remove characters from the end of a string so that the string matches the regex.
